@@ -14,16 +14,13 @@ function Get-DutchZipCodes{
         [string]$ZipCode
 
     )
-    if ($Zipcode -match '^\d{4}[A-Za-z]{2}$') {
-        Write-Information -MessageData "Valid zipcode format"
-    } else {
-        throw "Invalid Zipcode format. The zipcode should be as this format: 1234AB"
+    if ($Zipcode){
+        if($Zipcode -match '^\d{4}[A-Za-z]{2}$') {
+            Write-Information -MessageData "Valid zipcode format"
+        } else {
+            throw "Invalid Zipcode format. The zipcode should be as this format: 1234AB"
+        }
     }
-
-    #$StreetName = "Campbellhof"
-    #$HouseNumber = "20"
-    #$CityName = "Dronten"
-    #$ZipCodeNumber = "8251"
     try {
         $Address = @{}
         if($StreetName){$Address["StreetName"] = $StreetName}
@@ -31,7 +28,11 @@ function Get-DutchZipCodes{
         if($CityName){$Address["CityName"] = $CityName}
         if($ZipCode){$Address["ZipCode"] = [string]$ZipCode}
         
-        $Object = Invoke-LookupDutchZipCode -address @Address
+        $Object = Invoke-LookupDutchZipCode -address $Address
+        if(!$Object){
+            Write-Error "No results found for $address"
+            break
+        }
         return $Object   
     }
     catch {
