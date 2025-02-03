@@ -20,19 +20,22 @@ function Invoke-LookupDutchZipCode {
         $searchQuery = "q=" + ($ZipCodeQuery -join " AND ")
         $searchUrl = $defUrl + $searchQuery
 
-        Write-Output "Search URL: $searchUrl"
+        Write-Information -MessageData "Search URL: $searchUrl"
 
         $Response = Invoke-WebRequest -Method Get -Uri $searchUrl
-        Write-Output "Response: $($Response | Out-String)"
+        Write-Information -MessageData "Response: $($Response | Out-String)"
 
         $ID = Get-ZipCodeObject -IDObject $Response
         if (!$ID) {
             Write-Error "No ID found in the response"
             return $false
         }
+        if($ID.Count -gt 1){
+            return $ID
+        }
 
         $DetailedResponse = Invoke-DetailedZipCodeInfo -id $ID
-        Write-Output "Detailed Response: $($DetailedResponse | Out-String)"
+        Write-Information -MessageData "Detailed Response: $($DetailedResponse | Out-String)"
 
         $Result = Get-ZipCodeObject -Object $DetailedResponse
         return $Result
