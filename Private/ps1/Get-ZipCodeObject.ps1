@@ -7,7 +7,6 @@ function Get-ZipCodeObject{
         if($IDObject){
             $Item = $IDObject.Content | ConvertFrom-Json -Depth 10
             if($Item.response.numFound -eq 0){
-                Write-Error "No results found"
                 return $false
             }
             if($item.response.numFound -gt 2){
@@ -18,16 +17,21 @@ function Get-ZipCodeObject{
             $ID = $item.response.docs.id
             return $ID
         }
-    }catch{Write-Error "Could not get ID: $_"}
+    }catch{Write-Error "Could not get ID: $_,why do i get"}
 
     try {
         if($Object){
             $Item = $Object.Content | ConvertFrom-Json -Depth 10
-            $ReturnObject = $Item.response.docs | Select-Object -Property straatnaam,huisnummer,postcode,woonplaatsnaam,provincienaam,id
+            $ReturnObject = $Item.response.docs | Select-Object -Property @{Name='StreetName';Expression={$_.straatnaam}},
+                                                              @{Name='HouseNumber';Expression={$_.huisnummer}},
+                                                              @{Name='PostalCode';Expression={$_.postcode}},
+                                                              @{Name='CityName';Expression={$_.woonplaatsnaam}},
+                                                              @{Name='ProvinceName';Expression={$_.provincienaam}},
+                                                              @{Name='ID';Expression={$_.id}}
             return $ReturnObject
         }
     }
     catch {
-       Write-Error "Could not get Detailed information from object: $_"
+       Write-Error "Could not get Detailed information from object: $_, this one then?"
     }
 }

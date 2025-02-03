@@ -28,7 +28,7 @@ function Get-DutchZipCodes{
     }
     
     if ($Zipcode){
-        if($Zipcode -match '^\d{4}[A-Za-z]{2}$') {
+        if($ZipCode -match '^\d{4}[A-Za-z]{2}$') {
             Write-Information -MessageData "Valid zipcode format"
         } else {
             throw "Invalid Zipcode format. The zipcode should be as this format: 1234AB"
@@ -43,12 +43,11 @@ function Get-DutchZipCodes{
         
         $Object = Invoke-LookupDutchZipCode -address $Address
         if(!$Object){
-            Write-Error "No results found for $address"
-            break
+            return $false
         }
         return $Object   
     }
     catch {
-        Write-Error "Could not get Information $_"
+        Write-Error "Could not get Information: $_"
     }
 }
